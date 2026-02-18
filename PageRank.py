@@ -1,3 +1,6 @@
+from web_matrix import harvard_st
+import numpy as np
+
 
 def build_web_graph(edges):
     """
@@ -90,3 +93,23 @@ def compute_pagerank(G, tol=1e-6, max_iter=100):
             break
         r = r_new
     return r
+
+
+def main():
+    i, j, v = harvard_st()
+    edges = list(zip(i.tolist(), j.tolist()))
+    print(f"Nodes: {max(max(i), max(j)) + 1}")
+    print(f"Edges: {len(edges)}")
+
+    nodes, adj = build_wep_graph(edges)
+    P = build_transition_matrix(nodes, adj)
+    G = build_google_matrix(P)
+    r = compute_pagerank(G)
+
+    top_indicces = np.argsort(-r)[:20]
+    print("\nTop 20 pagerank nodes:")
+    for idx in top_indices:
+        print(f"Node {idx}: {r[idx]:.6f}")
+
+if __name__ == "__main__":
+    main()
