@@ -1,6 +1,5 @@
-from web_matrix import harvard_st
 import numpy as np
-
+from web_matrix import harvard_st
 
 def build_web_graph(edges):
     """
@@ -92,8 +91,26 @@ def compute_pagerank(G, tol=1e-6, max_iter=100):
         if np.linalg.norm(r_new - r, 1) < tol:
             break
         r = r_new
+
     return r
 
+def check_convergence(G, r):
+    """
+    Checks the convergence of the PageRank vector
+
+    Parameters:
+    G -- Google matrix
+    r -- PageRank vector
+
+    Checks if the column sums of G are close to 1, if the sum of r is close to 1, and if G @ r is close to r
+    """
+    col_dev = np.max(np.abs(np.sum(G, axis=0) - 1))
+    eigen_error = np.linalg.norm(G @ r - r, 1)
+    sum_r = np.sum(r)
+
+    print(f"Column sums max deviation: {col_dev}")
+    print(f"Sum of r: {sum_r}")
+    print(f"Eigenvector error: {eigen_error}")
 
 def main():
     i, j, v = harvard_st()
@@ -101,15 +118,16 @@ def main():
     print(f"Nodes: {max(max(i), max(j)) + 1}")
     print(f"Edges: {len(edges)}")
 
-    nodes, adj = build_wep_graph(edges)
+    nodes, adj = build_web_graph(edges)
     P = build_transition_matrix(nodes, adj)
     G = build_google_matrix(P)
     r = compute_pagerank(G)
 
-    top_indicces = np.argsort(-r)[:20]
+    top_indices = np.argsort(-r)[:20]
     print("\nTop 20 pagerank nodes:")
     for idx in top_indices:
         print(f"Node {idx}: {r[idx]:.6f}")
+    check_convergence(G, r)
 
 if __name__ == "__main__":
     main()
